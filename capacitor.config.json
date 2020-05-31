@@ -1,0 +1,13 @@
+{
+  "appId": "io.ionic.starter",
+  "appName": "30005429-RL_Mod2_Chal1",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "www",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  },
+  "cordova": {}
+}
