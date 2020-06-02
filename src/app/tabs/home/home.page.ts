@@ -22,6 +22,7 @@ export class HomePage implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.receiptService.readdir()
     this.receiptService.receipts.subscribe((receipts) => {
       this.loadedReceipts = receipts;
     });
@@ -53,16 +54,11 @@ export class HomePage implements OnInit {
 
   onTest() {
     return this.receiptService.receipts.subscribe((result: Receipt[]) => {
-      console.log("hi" + result);
-      console.log(result[3].timeStamp);
-      let fileName = "/receipts/" + result[3].timeStamp + ".jpg";
-      return Filesystem.readFile({
-        path: fileName,
-        directory: FilesystemDirectory.Data,
-      }).then((file) => {
-        console.log(file);
-        console.log(file.data);
-      });
+      // return Filesystem.readFile({
+      //   path: result[3].imageUri,
+      //   directory: FilesystemDirectory.Data,
+      // }).then(()=> {
+      this.image = result[3].imageUri;
     });
 
     // return Filesystem.readdir({
