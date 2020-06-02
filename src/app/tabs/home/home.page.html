@@ -1,6 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>home</ion-title>
+    <ion-button (click)="onTest()">Test</ion-button>
   </ion-toolbar>
 </ion-header>
 
@@ -14,31 +15,32 @@
     <ion-row>
       <ion-col size-sm="6" offset-sm="3">
         <ion-list>
-            <ion-item-sliding *ngFor="let receipt of loadedReceipts" #slidingItem>
-              <ion-item class="ion-text-center" (click)="onDetail(receipt.id)">
-                <ion-thumbnail>
-                  <img [src]="receipt.imageUrl" />
-                </ion-thumbnail>
-                <ion-label>
-                  <p>£{{ receipt.cost }}</p>
-                </ion-label>
-                <ion-label>
-                  <p>{{ receipt.Timestamp | date : 'dd MMM yyyy' }}</p>
-                </ion-label>
-              </ion-item>
-              <ion-item-options side="start">
-                <ion-item-option color="danger" (click)="onDelete(receipt.id, slidingItem)">
-                  <ion-icon slot="icon-only" name="trash"></ion-icon>
-                </ion-item-option>
-              </ion-item-options>
-              <ion-item-options side="end">
-                <ion-item-option color="warning" (click)="onEdit(receipt.id, slidingItem)">
-                  <ion-icon slot="icon-only" name="create-outline"></ion-icon>
-                </ion-item-option>
-              </ion-item-options>
-            </ion-item-sliding>
+          <ion-item-sliding *ngFor="let receipt of loadedReceipts" #slidingItem>
+            <ion-item class="ion-text-center" (click)="onDetail(receipt)">
+              <ion-thumbnail>
+                <img [src]="receipt.imageUri" />
+              </ion-thumbnail>
+              <ion-label>
+                <p>£{{ receipt.cost }}</p>
+              </ion-label>
+              <ion-label>
+                <p>{{ receipt.timeStamp | date : 'dd MMM yyyy' }}</p>
+              </ion-label>
+            </ion-item>
+            <ion-item-options side="start">
+              <ion-item-option color="danger" (click)="onDelete(receipt, slidingItem)">
+                <ion-icon slot="icon-only" name="trash"></ion-icon>
+              </ion-item-option>
+            </ion-item-options>
+            <ion-item-options side="end">
+              <ion-item-option color="warning" (click)="onEdit(receipt, slidingItem)">
+                <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+              </ion-item-option>
+            </ion-item-options>
+          </ion-item-sliding>
         </ion-list>
       </ion-col>
     </ion-row>
+    <ion-img [src]="image" style="height: 20vh; width: 20vh; border: 1px solid red"></ion-img>
   </ion-grid>
 </ion-content>

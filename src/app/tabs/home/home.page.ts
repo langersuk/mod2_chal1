@@ -3,6 +3,7 @@ import { ReceiptService } from "../receipt.service";
 import { Receipt } from "../receipt.model";
 import { IonItemSliding, LoadingController } from "@ionic/angular";
 import { Router } from "@angular/router";
+import { Filesystem, FilesystemDirectory } from "@capacitor/core";
 
 @Component({
   selector: "app-home",
@@ -12,6 +13,7 @@ import { Router } from "@angular/router";
 export class HomePage implements OnInit {
   loadedReceipts: Receipt[];
   total: number;
+  image = null;
 
   constructor(
     private receiptService: ReceiptService,
@@ -29,20 +31,45 @@ export class HomePage implements OnInit {
     this.total = this.receiptService.total();
   }
 
-  onDelete(receiptId: string, slidingItem: IonItemSliding) {
-    this.loadingCtrl.create({message: 'Cancelling...'}).then(loadingEl => {
-      loadingEl.present()
+  onDelete(receipt: Receipt, slidingItem: IonItemSliding) {
+    let receiptId = receipt.timeStamp.toString();
+    this.loadingCtrl.create({ message: "Cancelling..." }).then((loadingEl) => {
+      loadingEl.present();
       this.receiptService.deleteReceipt(receiptId).subscribe(() => {
-        this.loadingCtrl.dismiss()
+        this.loadingCtrl.dismiss();
       });
-    })
+    });
     slidingItem.close();
   }
-  onEdit(receiptId: string, slidingItem: IonItemSliding) {
+  onEdit(receipt: Receipt, slidingItem: IonItemSliding) {
+    let receiptId = receipt.timeStamp.toString();
     this.router.navigate(["./", "tabs", "home", "edit", receiptId]);
     slidingItem.close();
   }
-  onDetail(receiptId: string) {
+  onDetail(receipt: Receipt) {
+    let receiptId = receipt.timeStamp.toString();
     this.router.navigate(["./", "tabs", "home", receiptId]);
+  }
+
+  onTest() {
+    return this.receiptService.receipts.subscribe((result: Receipt[]) => {
+      console.log("hi" + result);
+      console.log(result[3].timeStamp);
+      let fileName = "/receipts/" + result[3].timeStamp + ".jpg";
+      return Filesystem.readFile({
+        path: fileName,
+        directory: FilesystemDirectory.Data,
+      }).then((file) => {
+        console.log(file);
+        console.log(file.data);
+      });
+    });
+
+    // return Filesystem.readdir({
+    //   path: "/receipts",
+    //   directory: FilesystemDirectory.Documents,
+    // }).then((files) => {
+    //   console.log(files.files);
+    // });
   }
 }

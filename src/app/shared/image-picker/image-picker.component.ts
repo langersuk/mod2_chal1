@@ -1,4 +1,12 @@
-import { Component, OnInit, ViewChild, ElementRef, Output, Input, EventEmitter } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  Output,
+  Input,
+  EventEmitter,
+} from "@angular/core";
 import { Platform } from "@ionic/angular";
 import {
   Plugins,
@@ -7,21 +15,19 @@ import {
   CameraResultType,
 } from "@capacitor/core";
 
-
-
 @Component({
-  selector: 'app-image-picker',
-  templateUrl: './image-picker.component.html',
-  styleUrls: ['./image-picker.component.scss'],
+  selector: "app-image-picker",
+  templateUrl: "./image-picker.component.html",
+  styleUrls: ["./image-picker.component.scss"],
 })
 export class ImagePickerComponent implements OnInit {
   @ViewChild("filePicker") filePickerRef: ElementRef<HTMLInputElement>;
   @Output() imagePick = new EventEmitter<string | File>();
-  @Input() showPreview = false
+  @Input() showPreview = false;
   selectedImage: string;
   usePicker = false;
 
-  constructor(private platform: Platform) { }
+  constructor(private platform: Platform) {}
 
   ngOnInit() {
     console.log("Mobile:", this.platform.is("mobile"));

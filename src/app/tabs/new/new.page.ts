@@ -1,5 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { Component, OnInit } from "@angular/core";
+import { FormGroup, FormControl, Validators } from "@angular/forms";
+import { ReceiptService } from "../receipt.service";
+import { Receipt } from "../receipt.model";
+import { Router } from "@angular/router";
 
 function base64toBlob(base64Data, contentType) {
   contentType = contentType || "";
@@ -23,14 +26,16 @@ function base64toBlob(base64Data, contentType) {
 }
 
 @Component({
-  selector: 'app-new',
-  templateUrl: './new.page.html',
-  styleUrls: ['./new.page.scss'],
+  selector: "app-new",
+  templateUrl: "./new.page.html",
+  styleUrls: ["./new.page.scss"],
 })
 export class NewPage implements OnInit {
-  form: FormGroup
+  form: FormGroup;
+  timeStamp: Date = null;
+  image;
 
-  constructor() {
+  constructor(private receiptService: ReceiptService, private router: Router) {
     this.form = new FormGroup({
       cost: new FormControl(null, {
         updateOn: "blur",
@@ -38,10 +43,9 @@ export class NewPage implements OnInit {
       }),
       image: new FormControl(null),
     });
-   }
-
-  ngOnInit() {
   }
+
+  ngOnInit() {}
 
   onImagePicked(imageData: string | File) {
     let imageFile;
@@ -59,6 +63,28 @@ export class NewPage implements OnInit {
       imageFile = imageData;
     }
     this.form.patchValue({ image: imageFile });
+    this.image = imageFile;
+    this.timeStamp = new Date();
   }
 
+  onSubmitReceipt() {
+    let newReceipt: Receipt = new Receipt(
+      this.form.value.cost,
+      this.image.name,
+      this.timeStamp
+    );
+    this.receiptService.addReceipt(newReceipt, this.image).then(() => {
+      this.router.navigateByUrl("/tabs/home");
+    });
+
+    // this.receiptService.fetchReceipts().then((data) => {
+    //   console.log(data);
+    // });
+
+    // this.receiptService.fetchImage("Hk_P-plate.svg (1).jpg").then((result) => {
+    //   console.log(result);
+    // });
+    // this.receiptService.fileRead()
+    // return this.receiptService.addReceipt(newReceipt).subscribe();
+  }
 }
