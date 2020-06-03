@@ -33,8 +33,8 @@ export class HomePage implements OnInit {
   // }
 
   onDelete(receipt: Receipt, slidingItem: IonItemSliding) {
-    let receiptId = receipt.timeStamp.toString();
-    this.loadingCtrl.create({ message: "Cancelling..." }).then((loadingEl) => {
+    let receiptId = receipt.timeStamp;
+    this.loadingCtrl.create({ message: "Deleting..." }).then((loadingEl) => {
       loadingEl.present();
       this.receiptService.deleteReceipt(receiptId).subscribe(() => {
         this.loadingCtrl.dismiss();
@@ -43,13 +43,9 @@ export class HomePage implements OnInit {
     slidingItem.close();
   }
   onEdit(receipt: Receipt, slidingItem: IonItemSliding) {
-    let receiptId = receipt.timeStamp.toString();
+    let receiptId = receipt.timeStamp;
     this.router.navigate(["./", "tabs", "home", "edit", receiptId]);
     slidingItem.close();
-  }
-  onDetail(receipt: Receipt) {
-    let receiptId = receipt.timeStamp.toString();
-    this.router.navigate(["./", "tabs", "home", receiptId]);
   }
 
 }

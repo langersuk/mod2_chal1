@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>home</ion-title>
+    <ion-title>Receipt Tracker</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -15,7 +15,7 @@
       <ion-col size-sm="6" offset-sm="3">
         <ion-list>
           <ion-item-sliding *ngFor="let receipt of loadedReceipts" #slidingItem>
-            <ion-item class="ion-text-center" (click)="onDetail(receipt)">
+            <ion-item class="ion-text-center" [routerLink]="['/tabs/home', receipt.timeStamp]">
               <ion-thumbnail>
                 <img [src]="receipt.imageUri" />
               </ion-thumbnail>

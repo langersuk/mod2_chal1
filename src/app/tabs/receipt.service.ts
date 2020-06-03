@@ -47,7 +47,7 @@ export class ReceiptService {
       .then(() => this._receipts.next(receipts));
   }
 
-  onChange() {
+  updateCache() {
     return this.receipts.pipe(
       take(1),
       tap((receipts: Receipt[]) => {
@@ -63,12 +63,27 @@ export class ReceiptService {
   }
 
   addReceipt(newReceipt: Receipt) {
-    let data: Receipt[] = [];
     return this.receipts.pipe(
       take(1),
       tap((receipts: Receipt[]) => {
         this._receipts.next(receipts.concat(newReceipt));
-        this.onChange().subscribe();
+        this.updateCache().subscribe();
+      })
+    );
+  }
+
+  updateReceipt(receiptToUpdate: Receipt, receiptId: string) {
+    let updatedReceipts: Receipt[];
+    return this.receipts.pipe(
+      take(1),
+      tap((receipts: Receipt[]) => {
+        const updatedReceiptIndex = receipts.findIndex(
+          (rt) => rt.timeStamp === receiptId
+        );
+        updatedReceipts = [...receipts];
+        updatedReceipts[updatedReceiptIndex] = receiptToUpdate;
+        this._receipts.next(updatedReceipts);
+        this.updateCache().subscribe();
       })
     );
   }
@@ -78,10 +93,9 @@ export class ReceiptService {
       take(1),
       tap((receipts: Receipt[]) => {
         this._receipts.next(
-          receipts.filter(
-            (receipt) => receipt.timeStamp.toString() !== receiptId
-          )
+          receipts.filter((receipt) => receipt.timeStamp !== receiptId)
         );
+        this.updateCache().subscribe();
       })
     );
   }

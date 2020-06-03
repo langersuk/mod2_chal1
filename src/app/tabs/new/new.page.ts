@@ -3,11 +3,6 @@ import { FormGroup, FormControl, Validators } from "@angular/forms";
 import { ReceiptService } from "../receipt.service";
 import { Receipt } from "../receipt.model";
 import { Router } from "@angular/router";
-import {
-  Filesystem,
-  FilesystemDirectory,
-  FilesystemEncoding,
-} from "@capacitor/core";
 
 @Component({
   selector: "app-new",
@@ -35,28 +30,7 @@ export class NewPage implements OnInit {
     this.form.patchValue({ image: imageUrl });
     this.timeStamp = new Date();
     if (typeof imageUrl === "string") {
-      console.log("string");
-      const path = "/receipts/" + this.timeStamp.toISOString() + ".jpg";
-      return Filesystem.writeFile({
-        data: imageUrl,
-        path: path,
-        directory: FilesystemDirectory.Data,
-        encoding: FilesystemEncoding.UTF8,
-      })
-        .then((file) => {
-          this.image = path;
-          console.log(file);
-          console.log(this.image);
-        })
-        .then(() => {
-          Filesystem.readFile({
-            directory: FilesystemDirectory.Data,
-            path: this.image,
-            encoding: FilesystemEncoding.UTF8,
-          }).then((file) => {
-            this.image = file.data;
-          });
-        });
+      this.image = imageUrl;
     } else {
       console.log("CameraPhoto");
       this.image = imageUrl.webPath;
@@ -70,6 +44,9 @@ export class NewPage implements OnInit {
       this.timeStamp.toISOString()
     );
     this.receiptService.addReceipt(newReceipt).subscribe();
+    this.form.reset();
+    this.timeStamp = null;
+    this.image = null
     this.router.navigateByUrl("/tabs/home");
   }
 }
