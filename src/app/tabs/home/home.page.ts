@@ -3,7 +3,6 @@ import { ReceiptService } from "../receipt.service";
 import { Receipt } from "../receipt.model";
 import { IonItemSliding, LoadingController } from "@ionic/angular";
 import { Router } from "@angular/router";
-import { Filesystem, FilesystemDirectory } from "@capacitor/core";
 
 @Component({
   selector: "app-home",
@@ -22,15 +21,16 @@ export class HomePage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.receiptService.readdir()
+    this.receiptService.readdir();
     this.receiptService.receipts.subscribe((receipts) => {
       this.loadedReceipts = receipts;
+      this.total = this.receiptService.total();
     });
   }
 
-  ionViewWillEnter() {
-    this.total = this.receiptService.total();
-  }
+  // ionViewWillEnter() {
+  //   this.total = this.receiptService.total();
+  // }
 
   onDelete(receipt: Receipt, slidingItem: IonItemSliding) {
     let receiptId = receipt.timeStamp.toString();
@@ -52,20 +52,4 @@ export class HomePage implements OnInit {
     this.router.navigate(["./", "tabs", "home", receiptId]);
   }
 
-  onTest() {
-    return this.receiptService.receipts.subscribe((result: Receipt[]) => {
-      // return Filesystem.readFile({
-      //   path: result[3].imageUri,
-      //   directory: FilesystemDirectory.Data,
-      // }).then(()=> {
-      this.image = result[3].imageUri;
-    });
-
-    // return Filesystem.readdir({
-    //   path: "/receipts",
-    //   directory: FilesystemDirectory.Documents,
-    // }).then((files) => {
-    //   console.log(files.files);
-    // });
-  }
 }

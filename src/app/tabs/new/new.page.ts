@@ -3,28 +3,11 @@ import { FormGroup, FormControl, Validators } from "@angular/forms";
 import { ReceiptService } from "../receipt.service";
 import { Receipt } from "../receipt.model";
 import { Router } from "@angular/router";
-import { CameraPhoto } from '@capacitor/core';
-
-function base64toBlob(base64Data, contentType) {
-  contentType = contentType || "";
-  const sliceSize = 1024;
-  const byteCharacters = atob(base64Data);
-  const bytesLength = byteCharacters.length;
-  const slicesCount = Math.ceil(bytesLength / sliceSize);
-  const byteArrays = new Array(slicesCount);
-
-  for (var sliceIndex = 0; sliceIndex < slicesCount; ++sliceIndex) {
-    const begin = sliceIndex * sliceSize;
-    const end = Math.min(begin + sliceSize, bytesLength);
-
-    const bytes = new Array(end - begin);
-    for (let offset = begin, i = 0; offset < end; ++i, ++offset) {
-      bytes[i] = byteCharacters[offset].charCodeAt(0);
-    }
-    byteArrays[sliceIndex] = new Uint8Array(bytes);
-  }
-  return new Blob(byteArrays, { type: contentType });
-}
+import {
+  Filesystem,
+  FilesystemDirectory,
+  FilesystemEncoding,
+} from "@capacitor/core";
 
 @Component({
   selector: "app-new",
@@ -33,7 +16,7 @@ function base64toBlob(base64Data, contentType) {
 })
 export class NewPage implements OnInit {
   form: FormGroup;
-  timeStamp: Date = null;
+  timeStamp: Date;
   image: string;
 
   constructor(private receiptService: ReceiptService, private router: Router) {
@@ -48,51 +31,45 @@ export class NewPage implements OnInit {
 
   ngOnInit() {}
 
-  // onImagePicked(imageData: string | File) {
-  //   let imageFile;
-  //   if (typeof imageData === "string") {
-  //     try {
-  //       imageFile = base64toBlob(
-  //         imageData.replace("data:image/jpeg;base64,", ""),
-  //         "image/jpeg"
-  //       );
-  //     } catch (error) {
-  //       console.log(error);
-  //       return;
-  //     }
-  //   } else {
-  //     imageFile = imageData;
-  //   }
-  //   this.form.patchValue({ image: imageFile });
-  //   this.image = imageFile;
-  //   this.timeStamp = new Date();
-  // }
-
-  onImagePicked(imageUrl: CameraPhoto) {
-    this.form.patchValue({ image: imageUrl })
-    this.image = imageUrl.webPath
-    this.timeStamp = new Date()
+  onImagePicked(imageUrl) {
+    this.form.patchValue({ image: imageUrl });
+    this.timeStamp = new Date();
+    if (typeof imageUrl === "string") {
+      console.log("string");
+      const path = "/receipts/" + this.timeStamp.toISOString() + ".jpg";
+      return Filesystem.writeFile({
+        data: imageUrl,
+        path: path,
+        directory: FilesystemDirectory.Data,
+        encoding: FilesystemEncoding.UTF8,
+      })
+        .then((file) => {
+          this.image = path;
+          console.log(file);
+          console.log(this.image);
+        })
+        .then(() => {
+          Filesystem.readFile({
+            directory: FilesystemDirectory.Data,
+            path: this.image,
+            encoding: FilesystemEncoding.UTF8,
+          }).then((file) => {
+            this.image = file.data;
+          });
+        });
+    } else {
+      console.log("CameraPhoto");
+      this.image = imageUrl.webPath;
+    }
   }
 
   onSubmitReceipt() {
     let newReceipt: Receipt = new Receipt(
       this.form.value.cost,
       this.image,
-      this.timeStamp.toDateString()
+      this.timeStamp.toISOString()
     );
-    this.receiptService.addReceipt(newReceipt).subscribe()
-    
+    this.receiptService.addReceipt(newReceipt).subscribe();
     this.router.navigateByUrl("/tabs/home");
-    
-
-    // this.receiptService.fetchReceipts().then((data) => {
-    //   console.log(data);
-    // });
-
-    // this.receiptService.fetchImage("Hk_P-plate.svg (1).jpg").then((result) => {
-    //   console.log(result);
-    // });
-    // this.receiptService.fileRead()
-    // return this.receiptService.addReceipt(newReceipt).subscribe();
   }
 }

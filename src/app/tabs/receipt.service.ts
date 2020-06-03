@@ -12,21 +12,6 @@ import {
 @Injectable({ providedIn: "root" })
 export class ReceiptService {
   private _receipts = new BehaviorSubject<Receipt[]>([]);
-  // new Receipt(
-  //   1.99,
-  //   "https://upload.wikimedia.org/wikipedia/commons/0/0b/ReceiptSwiss.jpg",
-  //   new Date(2018, 11, 24).toDateString()
-  // ),
-  // new Receipt(
-  //   7.99,
-  //   "https://live.staticflickr.com/2596/4139352235_bbfa7e37fb_b.jpg",
-  //   new Date(2019, 1, 12).toDateString()
-  // ),
-  // new Receipt(
-  //   3.99,
-  //   "https://live.staticflickr.com/3294/2623977987_8937dd3bc7_b.jpg",
-  //   new Date(2017, 5, 19).toDateString()
-  // ),
 
   get receipts() {
     return this._receipts.asObservable();
@@ -52,7 +37,6 @@ export class ReceiptService {
       encoding: FilesystemEncoding.UTF8,
     })
       .then((file) => {
-        console.log(file.data);
         const data = JSON.parse(file.data);
         for (const key in data) {
           receipts.push(
