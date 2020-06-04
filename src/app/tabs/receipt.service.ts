@@ -2,49 +2,61 @@ import { Receipt } from "./receipt.model";
 import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import { take, tap } from "rxjs/operators";
-import { HttpClient } from "@angular/common/http";
 import {
   Filesystem,
   FilesystemDirectory,
   FilesystemEncoding,
-  Capacitor,
 } from "@capacitor/core";
 @Injectable({ providedIn: "root" })
 export class ReceiptService {
   private _receipts = new BehaviorSubject<Receipt[]>([]);
+  public receiptsInitialised = new BehaviorSubject<boolean>(false);
 
   get receipts() {
     return this._receipts.asObservable();
   }
 
-  constructor(private http: HttpClient) {}
+  constructor() {}
 
   total() {
     let total = 0;
     this.receipts.pipe(take(1)).subscribe((receipts) => {
       receipts.forEach((receipt: Receipt) => {
-        total += +receipt.cost;
+        total += receipt.cost;
       });
     });
+    total = +total.toFixed(2);
     return total;
   }
 
   fetchReceipts() {
     const receipts: Receipt[] = [];
-    Filesystem.readFile({
+    return Filesystem.readFile({
       path: "receipts/receipts.json",
       directory: FilesystemDirectory.Data,
       encoding: FilesystemEncoding.UTF8,
     })
       .then((file) => {
-        const data = JSON.parse(file.data);
-        for (const key in data) {
-          receipts.push(
-            new Receipt(data[key].cost, data[key].imageUri, data[key].timeStamp)
-          );
+        try {
+          if (!file.data) throw "File is empty";
+          const data = JSON.parse(file.data);
+          for (const key in data) {
+            receipts.push(
+              new Receipt(
+                data[key].cost,
+                data[key].imageUri,
+                data[key].timeStamp
+              )
+            );
+          }
+        } catch (err) {
+          console.log(err);
         }
       })
-      .then(() => this._receipts.next(receipts));
+      .then(() => {
+        this._receipts.next(receipts);
+        this.receiptsInitialised.next(true);
+      });
   }
 
   updateCache() {
@@ -100,10 +112,10 @@ export class ReceiptService {
     );
   }
 
-  verifyIfExists(ITEM, LIST) {
+  verifyIfExists(item, list) {
     let verification = false;
-    for (let i = 0; i < LIST.length; i++) {
-      if (LIST[i] === ITEM) {
+    for (let i = 0; i < list.length; i++) {
+      if (list[i] === item) {
         verification = true;
         break;
       }
@@ -121,23 +133,27 @@ export class ReceiptService {
         console.log("'receipts.json' exists");
         this.fetchReceipts();
       } else {
-        Filesystem.writeFile({
+        return Filesystem.writeFile({
           data: "",
           path: "receipts/receipts.json",
           directory: FilesystemDirectory.Data,
           encoding: FilesystemEncoding.UTF8,
+        }).then(() => {
+          console.log("Creating 'receipts.json' in 'receipts/'");
+          this.fetchReceipts();
         });
-        console.log("Creating 'receipts.json' in 'receipts/'");
       }
     } catch (e) {
       console.log("Unable to read dir: " + e);
-      Filesystem.writeFile({
+      return Filesystem.writeFile({
         data: "",
         path: "receipts/receipts.json",
         directory: FilesystemDirectory.Data,
         encoding: FilesystemEncoding.UTF8,
+      }).then(() => {
+        console.log("Creating 'receipts.json'");
+        this.fetchReceipts();
       });
-      console.log("Creating 'receipts.json'");
     }
   }
 }

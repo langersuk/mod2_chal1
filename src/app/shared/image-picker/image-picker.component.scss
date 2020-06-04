@@ -1,21 +1,19 @@
 .picker {
-    width: 80%;
-    min-height: 20vh;
-    max-height: 60vh;
-    border: 1px solid var(--ion-color-primary);
-    margin: auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .image {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
+  width: 80%;
+  min-height: 20vh;
+  border: 1px solid var(--ion-color-primary);
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-  input[type="file"] {
-    display: none;
-  }
-  
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+input[type="file"] {
+  display: none;
+}
