@@ -69,7 +69,7 @@ export class HomePage implements OnInit, OnDestroy {
         .create({
           header: "Your first receipt!",
           message:
-            "Click on the receipt to bring up details. Swipe left to edit. Swipe right to delete",
+            "Click on the receipt to bring up details. Swipe left to edit. Swipe right to delete. You can add more receipts by clicking on New",
           buttons: ["Okay"],
         })
         .then((alertEl) => {
