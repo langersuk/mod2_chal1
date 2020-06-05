@@ -31,6 +31,11 @@
           </ion-item>
         </ion-col>
       </ion-row>
+      <ion-row *ngIf="!form.get('cost').valid && form.get('cost').touched">
+        <ion-col size-sm="6" offset-sm="3">
+          <p>Please enter a valid price</p>
+        </ion-col>
+      </ion-row>
       <ion-row style="height: 10vh;" class="ion-align-items-center">
         <ion-col size-sm="6" offset-sm="3" class="ion-text-center">
           <ion-label>{{ timeStamp | date : "yyyy-MMM-dd hh:mm"}}</ion-label>

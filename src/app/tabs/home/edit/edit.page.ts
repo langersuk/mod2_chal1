@@ -32,7 +32,10 @@ export class EditPage implements OnInit, OnDestroy {
     this.form = new FormGroup({
       cost: new FormControl(null, {
         updateOn: "blur",
-        validators: [Validators.required],
+        validators: [
+          Validators.required,
+          Validators.pattern(/^(\d+(\.\d{0,2})?|\.?\d{1,2})$/),
+        ],
       }),
       image: new FormControl(null),
     });
