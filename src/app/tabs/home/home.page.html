@@ -24,7 +24,7 @@
           <ion-item-sliding *ngFor="let receipt of loadedReceipts" #slidingItem>
             <ion-item class="ion-text-center" [routerLink]="['/tabs/home', receipt.timeStamp]">
               <ion-thumbnail>
-                <img [src]="receipt.imageUri" />
+                <ion-img [src]="receipt.imageUri"></ion-img>
               </ion-thumbnail>
               <ion-label>
                 <p>£{{ receipt.cost | number : '0.2-2' }}</p>
